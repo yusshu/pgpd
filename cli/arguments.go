@@ -25,8 +25,6 @@ type ArgIterator struct {
 	parentPtr *ArgIterator
 	backing   []string
 	nextIndex uint8
-	HasNext   func() bool
-	Back      func(uint8)
 }
 
 func (argItr ArgIterator) Next() (*string, error) {
@@ -36,4 +34,16 @@ func (argItr ArgIterator) Next() (*string, error) {
 	value := argItr.backing[argItr.nextIndex]
 	argItr.nextIndex = argItr.nextIndex + 1
 	return &value, nil
+}
+
+func (argItr ArgIterator) HasNext() bool {
+	return argItr.nextIndex < uint8(len(argItr.backing))
+}
+
+func (argItr ArgIterator) Back(index uint8) error {
+	if index < 0 || index >= uint8(len(argItr.backing)) {
+		return Error{"Index out of backing length!"}
+	}
+	argItr.nextIndex = index
+	return nil
 }
